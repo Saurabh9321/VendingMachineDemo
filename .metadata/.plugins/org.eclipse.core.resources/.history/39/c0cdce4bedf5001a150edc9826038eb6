@@ -1,0 +1,8 @@
+package com.saurabh.vendingmachine.factory;
+
+public interface VendingMachineFactory {
+	public long selectItemAndPrice(Item item);
+    public void payMoney(Coin coin);
+    public List<Coin> returnBalance();
+    public Cart<Item, List<Coin>> collectItemAndChange();
+}

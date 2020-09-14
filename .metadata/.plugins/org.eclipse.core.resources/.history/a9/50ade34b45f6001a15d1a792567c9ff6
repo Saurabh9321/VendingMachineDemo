@@ -1,0 +1,124 @@
+
+import org.junit.Ignore;
+import java.util.List;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.saurabh.vendingmachine.Exception.InSufficientChangeToReturnException;
+import com.saurabh.vendingmachine.Exception.NotAvailableException;
+import com.saurabh.vendingmachine.factory.VendingMachine;
+import com.saurabh.vendingmachine.factory.VendingMachineFactory;
+import com.saurabh.vendingmachine.factoryImpl.VendingMachineImpl;
+import com.saurabh.vendingmachine.models.Cart;
+import com.saurabh.vendingmachine.models.Coin;
+import com.saurabh.vendingmachine.models.Item;
+
+import static org.junit.Assert.*;
+
+public class VendingMachineAppTest {
+	private static VendingMachine vm;
+	   
+    @BeforeClass
+    public static void setUp(){
+        vm = VendingMachineFactory.createVendingMachine();
+    }
+   
+    @AfterClass
+    public static void tearDown(){
+        vm = null;
+    }
+   
+    @Test
+    public void testBuyItemWithExactPrice() throws NotAvailableException {
+        //select item, price in cents
+        long price = vm.selectItemAndPrice(Item.CHOCOLATES); 
+        //price should be Coke's price      
+        assertEquals(Item.CHOCOLATES.getPrice(), price);
+        //25 cents paid              
+        vm.payMoney(Coin.QUARTER);                           
+       
+        Cart<Item, List<Coin>> cart = vm.collectItemAndChange();
+        Item item = cart.getFirst();
+        List<Coin> change = cart.getSecond();
+       
+        //should be Coke
+        assertEquals(Item.CHOCOLATES, item);
+        //there should not be any change                              
+        assertTrue(change.isEmpty());                              
+    }
+   
+    @Test
+    public void testBuyItemWithMorePrice() throws NotAvailableException{
+        long price = vm.selectItemAndPrice(Item.COLDDRINK);
+        assertEquals(Item.COLDDRINK.getPrice(), price);
+       
+        vm.payMoney(Coin.QUARTER);       
+        vm.payMoney(Coin.QUARTER);      
+       
+        Cart<Item, List<Coin>> cart = vm.collectItemAndChange();
+        Item item = cart.getFirst();
+        List<Coin> change = cart.getSecond();
+       
+        //should be Coke
+        assertEquals(Item.COLDDRINK, item);
+        //there should not be any change                                     
+        assertTrue(!change.isEmpty());        
+        //comparing change                             
+        assertEquals(50 - Item.COLDDRINK.getPrice(), getTotal(change));  
+       
+    }  
+  
+   
+    @Test
+    public void testReturnBalance() throws NotAvailableException{
+        long price = vm.selectItemAndPrice(Item.CANDY);
+        assertEquals(Item.CANDY.getPrice(), price);       
+        vm.payMoney(Coin.DIME);
+        vm.payMoney(Coin.NICKLE);
+        vm.payMoney(Coin.CENT);
+        vm.payMoney(Coin.QUARTER);
+       
+        assertEquals(41, getTotal(vm.returnBalance()));       
+    }
+   
+    @Test(expected=NotAvailableException.class)
+    public void testSoldOut() throws NotAvailableException{
+        for (int i = 0; i < 7; i++) {
+            vm.selectItemAndPrice(Item.CHOCOLATES);
+            vm.payMoney(Coin.QUARTER);
+            vm.collectItemAndChange();
+        }
+     
+    }
+   
+    @Test(expected=InSufficientChangeToReturnException.class)
+    public void testNotSufficientChangeException() throws NotAvailableException{
+        for (int i = 0; i < 7; i++) {
+            vm.selectItemAndPrice(Item.COLDDRINK);
+            vm.payMoney(Coin.QUARTER);
+            vm.payMoney(Coin.QUARTER);
+            vm.collectItemAndChange();
+           
+            vm.selectItemAndPrice(Item.CANDY);
+            vm.payMoney(Coin.QUARTER);
+            vm.payMoney(Coin.QUARTER);
+            vm.collectItemAndChange();
+        }
+    }
+   
+   
+    @Ignore
+    public void testVendingMachineImpl(){
+        VendingMachineImpl vm = new VendingMachineImpl();
+    }
+   
+    private long getTotal(List<Coin> change){
+        long total = 0;
+        for(Coin c : change){
+            total = total + c.getDenomination();
+        }
+        return total;
+    }
+
+}

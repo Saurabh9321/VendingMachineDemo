@@ -1,0 +1,18 @@
+package com.saurabh.vendingmachine.Exception;
+
+public class InSufficientChangeToReturnException extends RuntimeException{
+	
+	 private String message;
+	public InSufficientChangeToReturnException(String message) {
+		
+		this.message = message;
+	}
+	
+	
+	
+	public String getMessage(){
+        return message + remaining;
+    }
+	 
+	 
+}

@@ -1,0 +1,106 @@
+
+import org.junit.Ignore;
+import java.util.List;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.saurabh.vendingmachine.Exception.InSufficientChangeToReturnException;
+import com.saurabh.vendingmachine.Exception.NotAvailableException;
+import com.saurabh.vendingmachine.factory.VendingMachine;
+import com.saurabh.vendingmachine.factory.VendingMachineFactory;
+import com.saurabh.vendingmachine.factoryImpl.VendingMachineImpl;
+import com.saurabh.vendingmachine.models.Cart;
+import com.saurabh.vendingmachine.models.Coin;
+import com.saurabh.vendingmachine.models.Item;
+
+import static org.junit.Assert.*;
+
+public class VendingMachineAppTest {
+	private static VendingMachine vending;
+	   
+    @BeforeClass
+    public static void setUp(){
+        vending = VendingMachineFactory.createVendingMachine();
+    }
+   
+   
+    @Test
+    public void testBuyItemWithExactMoney() throws NotAvailableException {
+
+        long price = vending.selectItemAndPrice(Item.CHOCOLATES);    
+        assertEquals(Item.CHOCOLATES.getPrice(), price);            
+        vending.payMoney(Coin.QUARTER);                           
+       
+        Cart<Item, List<Coin>> cart = vending.collectItemAndChange();
+        Item item = cart.getFirst();
+        List<Coin> change = cart.getSecond();
+        assertEquals(Item.CHOCOLATES, item);                             
+        assertTrue(change.isEmpty());                              
+    }
+   
+    @Test
+    public void testBuyItemWithMoreMoney() throws NotAvailableException{
+        long price = vending.selectItemAndPrice(Item.COLDDRINK);
+        assertEquals(Item.COLDDRINK.getPrice(), price);
+        vending.payMoney(Coin.QUARTER);       
+        vending.payMoney(Coin.QUARTER);      
+       
+        Cart<Item, List<Coin>> cart = vending.collectItemAndChange();
+        Item item = cart.getFirst();
+        List<Coin> change = cart.getSecond();
+       
+        assertEquals(Item.COLDDRINK, item);                                   
+        assertTrue(!change.isEmpty());                            
+        assertEquals(50 - Item.COLDDRINK.getPrice(), getTotal(change));  
+       
+    }  
+  
+   
+    @Test
+    public void testReturnBalance() throws NotAvailableException{
+        long price = vending.selectItemAndPrice(Item.CANDY);
+        assertEquals(Item.CANDY.getPrice(), price);       
+        vending.payMoney(Coin.DIME);
+        vending.payMoney(Coin.NICKLE);
+        vending.payMoney(Coin.CENT);
+        vending.payMoney(Coin.QUARTER);
+       
+        assertEquals(41, getTotal(vending.returnBalance()));       
+    }
+   
+    @Test(expected=NotAvailableException.class)
+    public void testNotAvailableException() throws NotAvailableException{
+        for (int i = 0; i < 7; i++) {
+            vending.selectItemAndPrice(Item.CHOCOLATES);
+            vending.payMoney(Coin.QUARTER);
+            vending.collectItemAndChange();
+        }
+     
+    }
+   
+    @Test(expected=InSufficientChangeToReturnException.class)
+    public void testNotSufficientChangeException() throws NotAvailableException{
+        for (int i = 0; i < 7; i++) {
+            vending.selectItemAndPrice(Item.COLDDRINK);
+            vending.payMoney(Coin.QUARTER);
+            vending.payMoney(Coin.QUARTER);
+            vending.collectItemAndChange();
+           
+            vending.selectItemAndPrice(Item.CANDY);
+            vending.payMoney(Coin.QUARTER);
+            vending.payMoney(Coin.QUARTER);
+            vending.collectItemAndChange();
+        }
+    }
+   
+   
+    private long getTotal(List<Coin> change){
+        long total = 0;
+        for(Coin c : change){
+            total = total + c.getDenomination();
+        }
+        return total;
+    }
+
+}

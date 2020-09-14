@@ -1,0 +1,16 @@
+package com.saurabh.vendingmachine.Exception;
+
+public class InSufficientPaymentException {
+	private String message;
+
+	public InSufficientPaymentException(String message) {
+		
+		this.message = message;
+	}
+	
+	@Override
+    public String getMessage(){
+        return message;
+    }
+
+}

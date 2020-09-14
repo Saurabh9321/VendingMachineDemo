@@ -1,0 +1,8 @@
+1600003019880	Delete element
+1600003068466	Delete element
+1600020694693	Rename type 'InSufficientPayment'
+1600058891757	Rename field 'vm'
+1600059085424	Rename method 'updateCashInventory'
+1600059110677	Rename method 'getChange'
+1600059773745	Rename field 'itemInventory'
+1600059791375	Rename field 'cashInventory'

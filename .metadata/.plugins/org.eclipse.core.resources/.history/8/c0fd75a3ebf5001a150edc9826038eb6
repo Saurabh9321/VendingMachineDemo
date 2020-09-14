@@ -1,0 +1,6 @@
+package com.saurabh.vendingmachine.models;
+
+public enum Item {
+	CHOCOLATES("Chocolates", 25), CANDY("Candy", 35), COLDDRINK("ColdDrink", 45);
+
+}

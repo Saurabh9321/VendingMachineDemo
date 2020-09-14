@@ -1,0 +1,55 @@
+package com.saurabh.vendingmachine.factoryImpl;
+
+import com.saurabh.vendingmachine.Exception.NotAvailableException;
+import com.saurabh.vendingmachine.factory.Cart;
+import com.saurabh.vendingmachine.factory.Coin;
+import com.saurabh.vendingmachine.factory.Item;
+import com.saurabh.vendingmachine.factory.List;
+import com.saurabh.vendingmachine.factory.VendingMachineFactory;
+
+public class VendingMachineImpl implements VendingMachineFactory{
+	
+	private Inventory<Coin> cashInventory = new Inventory<Coin>();
+    private Inventory<Item> itemInventory = new Inventory<Item>();  
+    private long totalSales;
+    private Item currentItem;
+    private long currentBalance;
+    
+    
+    public VendingMachineImpl(){
+        bootUpMachine();
+    }
+    
+	private void bootUpMachine() {
+		
+		for(Coin c : Coin.values()){
+            cashInventory.put(c, 7);
+        }
+       
+        for(Item i : Item.values()){
+            itemInventory.put(i, 7);
+        }
+		
+	}
+
+	public long selectItemAndPrice(Item item) {
+		 if(itemInventory.hasItem(item)){
+	            currentItem = item;
+	            return currentItem.getPrice();
+	     }
+	     throw new NotAvailableException("Sold Out, Please buy another item");
+	}
+	public void payMoney(Coin coin) {
+		// TODO Auto-generated method stub
+		
+	}
+	public List<Coin> returnBalance() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public Cart<Item, List<Coin>> collectItemAndChange() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

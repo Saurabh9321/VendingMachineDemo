@@ -1,0 +1,9 @@
+package com.saurabh.vendingmachine.Exception;
+
+public class NotAvailableException extends Exception {
+
+	public NotAvailableException(String string) {
+		// TODO Auto-generated constructor stub
+	}
+
+}

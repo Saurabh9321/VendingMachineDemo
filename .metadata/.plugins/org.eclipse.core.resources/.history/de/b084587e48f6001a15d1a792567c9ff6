@@ -1,0 +1,15 @@
+package com.saurabh.vendingmachine.Exception;
+
+public class NotAvailableException extends Exception {
+	 private String message;
+	
+	public NotAvailableException(String string) {
+		this.message = string;
+	}
+	
+	@Override
+    public String getMessage(){
+        return message;
+    }
+
+}

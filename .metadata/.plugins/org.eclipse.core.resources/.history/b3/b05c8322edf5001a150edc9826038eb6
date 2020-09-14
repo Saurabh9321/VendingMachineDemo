@@ -1,0 +1,5 @@
+package com.saurabh.vendingmachine.Exception;
+
+public class InSufficientChangeToReturnException {
+
+}
